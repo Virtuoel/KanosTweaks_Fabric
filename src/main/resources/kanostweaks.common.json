@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "virtuoel.kanostweaks.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins":
+	[
+		"BedBlockMixin",
+		"FluidsMixin"
+	],
+	"injectors":
+	{
+		"defaultRequire": 1
+	}
+}
