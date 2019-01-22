@@ -1,10 +1,20 @@
 {
 	"id": "kanostweaks",
 	"name": "KanosTweaks",
-	"version": "1.0.0.0",
+	"version": "${version}",
 	"side": "universal",
-	"initializer": "virtuoel.kanostweaks.KanosTweaks",
-	"mixins": {
+	"requires":
+	{
+		"fabric": "*",
+		"towelette": "*"
+	},
+	"initializers":
+	[
+		"virtuoel.kanostweaks.KanosTweaks",
+		"virtuoel.kanostweaks.KanosTweaksClient"
+	],
+	"mixins":
+	{
 		"client": "kanostweaks.client.json",
 		"common": "kanostweaks.common.json"
 	}

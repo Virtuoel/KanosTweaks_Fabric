@@ -64,7 +64,7 @@ public class BlockRegistrar
 		{
 			final FireBlock FIRE = ((FireBlock) Blocks.FIRE);
 			
-			FIRE.method_10189(OAK_WOOD_WALL, 5, 5);
+			FIRE.registerFlammable(OAK_WOOD_WALL, 5, 5);
 		}
 	}
 	

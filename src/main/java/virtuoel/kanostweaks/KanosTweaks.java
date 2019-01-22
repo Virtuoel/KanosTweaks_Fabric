@@ -11,10 +11,6 @@ import virtuoel.kanostweaks.init.ItemRegistrar;
 
 public class KanosTweaks implements ModInitializer
 {
-	// http://fabric.asie.pl/wiki/setup
-	// https://docs.spongepowered.org/stable/en/contributing/implementation/mixins.html
-	// https://minecraft.curseforge.com/mc-mods?filter-game-version=1738749986%3A64806&filter-sort=2
-	
 	public static final String MOD_ID = "kanostweaks";
 	
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);

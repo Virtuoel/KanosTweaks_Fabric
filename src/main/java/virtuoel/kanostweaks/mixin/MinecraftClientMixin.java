@@ -9,13 +9,15 @@ import org.spongepowered.asm.mixin.Shadow;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockHitResult;
+import net.minecraft.util.EntityHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.HitResult;
-import net.minecraft.util.math.BlockPos;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin
@@ -24,21 +26,16 @@ public abstract class MinecraftClientMixin
 	@Shadow public ClientPlayerInteractionManager interactionManager;
 	@Shadow public ClientWorld world;
 	@Shadow public ClientPlayerEntity player;
-	@Shadow public WorldRenderer worldRenderer;
+	@Shadow public GameRenderer gameRenderer;
 	@Shadow public HitResult hitResult;
-	@Shadow private int field_1752;
-	
-	public void minecraftClient$doItemUse()
-	{
-		doItemUse();
-	}
+	@Shadow private int itemUseCooldown;
 	
 	@Overwrite
 	public void doItemUse()
 	{
 		if(!this.interactionManager.isBreakingBlock())
 		{
-			this.field_1752 = 4;
+			this.itemUseCooldown = 4;
 			if(!this.player.method_3144()) // rowing boat
 			{
 				if(this.hitResult == null)
@@ -46,58 +43,57 @@ public abstract class MinecraftClientMixin
 					LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
 				}
 				
-				for(Hand hand : Hand.values())
+				for(Hand hand_1 : Hand.values())
 				{
-					ItemStack held = this.player.getStackInHand(hand);
+					ItemStack itemStack_1 = this.player.getStackInHand(hand_1);
 					if(this.hitResult != null)
 					{
-						switch(this.hitResult.type)
+						switch(this.hitResult.getType())
 						{
 							case ENTITY:
-								if(this.interactionManager.interactEntityAtLocation(this.player, this.hitResult.entity, this.hitResult, hand) == ActionResult.SUCCESS)
+								EntityHitResult entityHitResult_1 = (EntityHitResult) this.hitResult;
+								Entity entity_1 = entityHitResult_1.getEntity();
+								if(this.interactionManager.interactEntityAtLocation(this.player, entity_1, entityHitResult_1, hand_1) == ActionResult.SUCCESS)
 								{
 									return;
 								}
 								
-								if(this.interactionManager.interactEntity(this.player, this.hitResult.entity, hand) == ActionResult.SUCCESS)
+								if(this.interactionManager.interactEntity(this.player, entity_1, hand_1) == ActionResult.SUCCESS)
 								{
 									return;
 								}
 								break;
 							case BLOCK:
-								BlockPos targetpos = this.hitResult.getBlockPos();
-								if(!this.world.getBlockState(targetpos).isAir())
+								BlockHitResult blockHitResult_1 = (BlockHitResult) this.hitResult;
+								int int_1 = itemStack_1.getAmount();
+								ActionResult actionResult_1 = this.interactionManager.interactBlock(this.player, this.world, hand_1, blockHitResult_1);
+								if(actionResult_1 == ActionResult.SUCCESS)
 								{
-									int i = held.getAmount();
-									ActionResult result = this.interactionManager.interactBlock(this.player, this.world, targetpos, this.hitResult.side, this.hitResult.pos, hand);
-									if(result == ActionResult.SUCCESS)
+									this.player.swingHand(hand_1);
+									if(!itemStack_1.isEmpty() && (itemStack_1.getAmount() != int_1 || this.interactionManager.hasCreativeInventory()))
 									{
-										this.player.swingHand(hand);
-										if(!held.isEmpty() && (held.getAmount() != i || this.interactionManager.hasCreativeInventory()))
-										{
-											this.worldRenderer.firstPersonRenderer.resetEquipProgress(hand);
-										}
-										
-										return;
+										this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand_1);
 									}
-									/*
-									if(result == ActionResult.FAILURE)
-									{
-										return;
-									}
-									*/
+									
+									return;
 								}
+								/*
+								if(actionResult_1 == ActionResult.FAILURE)
+								{
+									return;
+								}*/
 							default:
 								break;
 						}
 					}
 					
-					if(!held.isEmpty() && this.interactionManager.interactItem(this.player, this.world, hand) == ActionResult.SUCCESS)
+					if(!itemStack_1.isEmpty() && this.interactionManager.interactItem(this.player, this.world, hand_1) == ActionResult.SUCCESS)
 					{
-						this.worldRenderer.firstPersonRenderer.resetEquipProgress(hand);
+						this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand_1);
 						return;
 					}
 				}
+				
 			}
 		}
 	}

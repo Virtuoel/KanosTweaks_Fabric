@@ -42,7 +42,7 @@ public abstract class BedBlockMixin// extends BlockMixin
 	}
 	
 	@Overwrite
-	public BlockEntity blockEntityProvider$createBlockEntity(BlockView var1)
+	public BlockEntity blockEntityProvider$createBlockEntity(BlockView blockView_1)
 	{
 		return null;
 	}*/

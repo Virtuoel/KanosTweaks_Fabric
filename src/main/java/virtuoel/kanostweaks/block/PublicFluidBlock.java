@@ -1,13 +1,13 @@
 package virtuoel.kanostweaks.block;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.BaseFluid;
 
 public class PublicFluidBlock extends FluidBlock
 {
-	// because ofc FluidBlock is protected
-	public PublicFluidBlock(BaseFluid fluid, Settings settings)
+	public PublicFluidBlock(BaseFluid baseFluid_1, Block.Settings block$Settings_1)
 	{
-		super(fluid, settings);
+		super(baseFluid_1, block$Settings_1);
 	}
 }
